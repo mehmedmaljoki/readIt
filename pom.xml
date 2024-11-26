@@ -10,10 +10,10 @@
   </parent>
 
   <groupId>com.mehmedmaljoki</groupId>
-  <artifactId>testing-spring-boot-applications</artifactId>
+  <artifactId>RaedIt</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>testing-spring-boot-applications</name>
-  <description>testing-spring-boot-applications</description>
+  <name>ReadIt</name>
+  <description>everything about books</description>
 
 
   <properties>
