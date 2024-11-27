@@ -22,8 +22,7 @@ public class ReadItApplication {
       String welcomeMessage =
           """
         \n
-        Welcome to the Testing Spring Boot Applications Masterclass!
-        If you can see this in the console, you successfully started the course application.
+        Welcome to the ReadIt application.
         """;
 
       LOG.info(welcomeMessage);
