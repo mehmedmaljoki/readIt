@@ -104,5 +104,5 @@ $ npm -v
       ```
 4. Frontend will be started with backend
 5. Access the application at `http://localhost:8080`.
-6. Access Keycloak Admin (optional): http://localhost:8888.
+6. Access Keycloak Admin (optional): `http://localhost:8888`.
 
