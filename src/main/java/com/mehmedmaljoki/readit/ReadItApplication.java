@@ -20,10 +20,10 @@ public class ReadItApplication {
   CommandLineRunner welcomeMessage() {
     return runner -> {
       String welcomeMessage =
-          """
-        \n
-        Welcome to the ReadIt application.
-        """;
+        """
+          \n
+          Welcome to the ReadIt application.
+          """;
 
       LOG.info(welcomeMessage);
     };
