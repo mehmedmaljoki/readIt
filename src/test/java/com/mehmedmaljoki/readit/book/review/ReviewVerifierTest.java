@@ -66,9 +66,9 @@ class ReviewVerifierTest {
   }
 
   @ParameterizedTest
-//  @EnumSource -> enums
-//  @MethodSource -> You write the method ro return set or something else that is then executed
-//  @ValueSource
+  //  @EnumSource -> enums
+  //  @MethodSource -> You write the method ro return set or something else that is then executed
+  //  @ValueSource
   @CsvFileSource(resources = "/badReview.csv")
   void shouldFailWhenReviewIsOfBadQuality(String review) {
     var result = reviewVerifier.doesMeetQualityStandards(review);
@@ -89,7 +89,55 @@ class ReviewVerifierTest {
     var result = reviewVerifier.doesMeetQualityStandards(review);
 
     assertFalse(result, "ReviewVerifier did not detect random bad review");
-
   }
 
+  @Test
+  void shouldPassWhenReviewIsGood() {
+    var review = "This book is amazing. I couldn't put it down. " +
+      "The characters are so well developed and the plot is so " +
+      "engaging. I highly recommend it.";
+
+    var result = reviewVerifier.doesMeetQualityStandards(review);
+
+    assertTrue(result, "ReviewVerifier did not detect good review");
+  }
+
+  @Test
+  void parallelizationOfTests() throws InterruptedException {
+    Thread.sleep(1000);
+
+    var review = "This book is amazing. I couldn't put it down. " +
+      "The characters are so well developed and the plot is so " +
+      "engaging. I highly recommend it.";
+
+    var result = reviewVerifier.doesMeetQualityStandards(review);
+
+    assertTrue(result, "ReviewVerifier did not detect good review");
+  }
+
+  @Test
+  void parallelizationOfTests2() throws InterruptedException {
+    Thread.sleep(1000);
+
+    var review = "This book is amazing. I couldn't put it down. " +
+      "The characters are so well developed and the plot is so " +
+      "engaging. I highly recommend it.";
+
+    var result = reviewVerifier.doesMeetQualityStandards(review);
+
+    assertTrue(result, "ReviewVerifier did not detect good review");
+  }
+
+  @Test
+  void parallelizationOfTests3() throws InterruptedException {
+    Thread.sleep(1000);
+
+    var review = "This book is amazing. I couldn't put it down. " +
+      "The characters are so well developed and the plot is so " +
+      "engaging. I highly recommend it.";
+
+    var result = reviewVerifier.doesMeetQualityStandards(review);
+
+    assertTrue(result, "ReviewVerifier did not detect good review");
+  }
 }
