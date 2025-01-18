@@ -19,7 +19,7 @@ public class OpenLibraryApiClient {
 
   public Book fetchMetadataForBook(String isbn) {
 
-    ObjectNode result =
+    var result =
       openLibraryWebClient
         .get()
         .uri(
@@ -35,13 +35,18 @@ public class OpenLibraryApiClient {
         .retryWhen(Retry.fixedDelay(2, Duration.ofMillis(200)))
         .block();
 
-    JsonNode content = result.get(isbn);
+    var content = result.get(isbn);
 
     return convertToBook(isbn, content);
   }
 
   private Book convertToBook(String isbn, JsonNode content) {
-    Book book = new Book();
+    var book = new Book();
+
+    return getBook(isbn, content, book);
+  }
+
+  static Book getBook(String isbn, JsonNode content, Book book) {
     book.setIsbn(isbn);
     book.setThumbnailUrl(content.get("cover").get("small").asText());
     book.setTitle(content.get("title").asText());
