@@ -6,7 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +38,12 @@ class BookSynchronizationListenerTest {
 
   @Test
   void shouldNotOverrideWhenBookAlreadyExists() {
+    var bookSynchronization = new BookSynchronization("1234567891234");
+    when(bookRepository.findByIsbn("1234567891234")).thenReturn(new Book());
 
+    cut.consumeBookUpdates(bookSynchronization);
+    verifyNoInteractions(openLibraryApiClient);
+    verify(bookRepository, times(0)).save(any());
   }
 
   @Test
