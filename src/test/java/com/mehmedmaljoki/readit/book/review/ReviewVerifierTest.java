@@ -1,5 +1,6 @@
 package com.mehmedmaljoki.readit.book.review;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -122,6 +123,26 @@ class ReviewVerifierTest {
     assertThat("Lorem ipsum", endsWith("ipsum"));
     assertThat(List.of(1, 2, 3, 4, 5), hasSize(5));
     assertThat(List.of(1, 2, 3, 4, 5), anyOf(hasSize(5), emptyIterable()));
+  }
+
+  @Test
+  void shouldPassWhenReviewIsGoodAssertJ() {
+    var review = "This book is amazing. I couldn't put it down. " +
+      "The characters are so well developed and the plot is so " +
+      "engaging. I highly recommend it.";
+
+    var result = reviewVerifier.doesMeetQualityStandards(review);
+
+    Assertions.assertThat(result)
+      .withFailMessage("ReviewVerifier did not pass a good review")
+      .isEqualTo(true);
+
+    Assertions.assertThat(List.of(1, 2, 3, 4, 5))
+      .isNotEmpty()
+      .hasSizeBetween(1, 10)
+      .hasSize(5)
+      .contains(1, 2, 3, 4, 5)
+      .doesNotContain(6, 7, 8, 9, 10);
   }
 
   @Test
