@@ -60,7 +60,21 @@ class BookSynchronizationListenerTest {
 
   @Test
   void shouldStoreBookWhenNewAndCorrectIsbn() {
+    var bookSynchronization = new BookSynchronization(VALID_ISBN);
+    when(bookRepository.findByIsbn(VALID_ISBN)).thenReturn(null);
 
+    var requestedBook = new Book();
+    requestedBook.setTitle("Java book");
+    requestedBook.setIsbn(VALID_ISBN);
+
+    when(openLibraryApiClient.fetchMetadataForBook(VALID_ISBN)).thenReturn(requestedBook);
+    when(bookRepository.save(any())).then(invocation -> {
+      var book = invocation.getArgument(0, Book.class);
+      book.setId(1L);
+      return book;
+    });
+
+    cut.consumeBookUpdates(bookSynchronization);
   }
 
 }
