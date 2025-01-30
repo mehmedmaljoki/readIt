@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BookSynchronizationListenerTest {
 
+  private final static String VALID_ISBN = "1234567891234";
 
   @Mock
   private BookRepository bookRepository;
@@ -38,8 +39,8 @@ class BookSynchronizationListenerTest {
 
   @Test
   void shouldNotOverrideWhenBookAlreadyExists() {
-    var bookSynchronization = new BookSynchronization("1234567891234");
-    when(bookRepository.findByIsbn("1234567891234")).thenReturn(new Book());
+    var bookSynchronization = new BookSynchronization(VALID_ISBN);
+    when(bookRepository.findByIsbn(VALID_ISBN)).thenReturn(new Book());
 
     cut.consumeBookUpdates(bookSynchronization);
     verifyNoInteractions(openLibraryApiClient);
@@ -48,7 +49,13 @@ class BookSynchronizationListenerTest {
 
   @Test
   void shouldThrowExceptionWhenProcessingFails() {
+    var bookSynchronization = new BookSynchronization(VALID_ISBN);
+    when(bookRepository.findByIsbn(VALID_ISBN)).thenReturn(null);
 
+    when(openLibraryApiClient.fetchMetadataForBook(VALID_ISBN))
+      .thenThrow(new RuntimeException("Network timeout"));
+
+    assertThrows(RuntimeException.class, () -> cut.consumeBookUpdates(bookSynchronization));
   }
 
   @Test
