@@ -1,11 +1,15 @@
 package com.mehmedmaljoki.readit.book.managment;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -27,6 +31,9 @@ class BookSynchronizationListenerTest {
 
   @InjectMocks
   private BookSynchronizationListener cut; // class under test
+
+  @Captor
+  private ArgumentCaptor<Book> bookCaptor;
 
   @Test
   void shouldRejectBookWhenIsbnIsMalformed() {
@@ -75,6 +82,32 @@ class BookSynchronizationListenerTest {
     });
 
     cut.consumeBookUpdates(bookSynchronization);
+  }
+
+  @Test
+  void shouldStoreBookWhenNewAndCorrectIsbnAnotherApproach() {
+    // helpful for void methods to ensure that they are called
+    var bookSynchronization = new BookSynchronization(VALID_ISBN);
+    when(bookRepository.findByIsbn(VALID_ISBN)).thenReturn(null);
+
+    var requestedBook = new Book();
+    requestedBook.setTitle("Java book");
+    requestedBook.setIsbn(VALID_ISBN);
+
+    when(openLibraryApiClient.fetchMetadataForBook(VALID_ISBN)).thenReturn(requestedBook);
+    when(bookRepository.save(any())).then(invocation -> {
+      var book = invocation.getArgument(0, Book.class);
+      book.setId(1L);
+      return book;
+    });
+
+    cut.consumeBookUpdates(bookSynchronization);
+
+    verify(bookRepository).save(bookCaptor.capture());
+
+    var methodArgument = bookCaptor.getValue();
+    assertEquals("Java book", methodArgument.getTitle());
+    assertEquals(VALID_ISBN, methodArgument.getIsbn());
   }
 
 }
