@@ -14,7 +14,15 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.List;
+
 import static com.mehmedmaljoki.readit.book.review.RandomReviewParameterResolverExtension.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(RandomReviewParameterResolverExtension.class)
@@ -100,6 +108,20 @@ class ReviewVerifierTest {
     var result = reviewVerifier.doesMeetQualityStandards(review);
 
     assertTrue(result, "ReviewVerifier did not detect good review");
+  }
+
+  @Test
+  void shouldPassWhenReviewIsGoodHamcrest() {
+    var review = "This book is amazing. I couldn't put it down. " +
+      "The characters are so well developed and the plot is so " +
+      "engaging. I highly recommend it.";
+
+    var result = reviewVerifier.doesMeetQualityStandards(review);
+
+    assertThat("ReviewVerifier did not pass a good review", result, equalTo(true));
+    assertThat("Lorem ipsum", endsWith("ipsum"));
+    assertThat(List.of(1, 2, 3, 4, 5), hasSize(5));
+    assertThat(List.of(1, 2, 3, 4, 5), anyOf(hasSize(5), emptyIterable()));
   }
 
   @Test
