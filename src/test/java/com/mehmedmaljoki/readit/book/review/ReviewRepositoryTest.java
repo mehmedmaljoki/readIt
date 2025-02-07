@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import javax.sql.DataSource;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,6 +53,22 @@ class ReviewRepositoryTest {
 
     System.out.println(dataSource.getConnection().getMetaData().getDatabaseProductName());
 
+    var review = new Review();
+    review.setTitle("Review 101");
+    review.setContent("This is a review");
+    review.setCreatedAt(LocalDateTime.now());
+    review.setRating(5);
+    review.setBook(null);
+    review.setUser(null);
+
+    // var result = cut.save(review);
+    // here you get what is persistent and we did not check if it is really saved in the DB
+    // here you have only maybe a insert
+
+    var result = testEntityManager.persistFlushFind(review);
+    // here you get a insert and select statement
+
+    assertNotNull(result.getId());
   }
 
 }
