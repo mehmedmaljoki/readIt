@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import javax.sql.DataSource;
 
@@ -21,6 +22,21 @@ class ReviewRepositoryTest {
   @Autowired
   private EntityManager entityManager;
 
+  /*
+   * - is in the test package -> no access on production code
+   * - useful if testing first and second level cache
+   * - first level(right behind cache):
+   *      tries to optimize the time for sending sql statements to the DB
+   * - second level cache:
+   *     tries to optimize the time for sending sql statements to the DB
+   * so if your PROD code says save it does not garantuee that it is saved in the DB
+   * so working with EntityManager and Hibernate can be trobeling some times and
+   * the TestEntityManager is a good way to test this bc it wraps and bundels
+   * more calls in one call.
+   */
+  @Autowired
+  private TestEntityManager testEntityManager;
+
   @Autowired
   private ReviewRepository cut;
 
@@ -31,6 +47,7 @@ class ReviewRepositoryTest {
   void notNull() throws SQLException {
     assertNotNull(cut);
     assertNotNull(entityManager);
+    assertNotNull(testEntityManager);
     assertNotNull(dataSource);
 
     System.out.println(dataSource.getConnection().getMetaData().getDatabaseProductName());
