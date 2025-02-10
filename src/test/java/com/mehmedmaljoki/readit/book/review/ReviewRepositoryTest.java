@@ -1,6 +1,7 @@
 package com.mehmedmaljoki.readit.book.review;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -44,6 +45,13 @@ class ReviewRepositoryTest {
   @Autowired
   private DataSource dataSource;
 
+  @BeforeEach
+  void beforeEach() {
+    assertEquals(0, cut.count());
+    // to be clean on every test
+    // transactional support
+  }
+
   @Test
   void notNull() throws SQLException {
     assertNotNull(cut);
@@ -63,12 +71,25 @@ class ReviewRepositoryTest {
 
     // var result = cut.save(review);
     // here you get what is persistent and we did not check if it is really saved in the DB
-    // here you have only maybe a insert
+    // here you have only maybe an insert
 
     var result = testEntityManager.persistFlushFind(review);
     // here you get a insert and select statement
 
     assertNotNull(result.getId());
+  }
+
+  @Test
+  void transactionalSupportTest() {
+    var review = new Review();
+    review.setTitle("Review 101");
+    review.setContent("This is a review");
+    review.setCreatedAt(LocalDateTime.now());
+    review.setRating(5);
+    review.setBook(null);
+    review.setUser(null);
+
+    var result = cut.save(review);
   }
 
 }
