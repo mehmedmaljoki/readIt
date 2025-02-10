@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
@@ -17,8 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 // Anything above this layer will not be injected like @Service, @Component, @Component @Controller
 @DataJpaTest(properties =  {
   "spring.flyway.enabled=false", // we need this if you have problems without using a in-memory database
-  "spring.jpa.hibernate.ddl-auto=create-drop" // we need this if you have problems without using a in-memory database
+  "spring.jpa.hibernate.ddl-auto=create-drop", // we need this if you have problems without using a in-memory database
+  "spring.datasource.driver-class-name=com.p6spy.engine.spy.P6SpyDriver", // overwrites the driver class name
+  "spring.datasource.url=jdbc:p6spy:h2:mem:testing;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", // overwrites the url
 })
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ReviewRepositoryTest {
 
   @Autowired

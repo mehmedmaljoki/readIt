@@ -124,6 +124,7 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- using p6spy for more insights.. intercepts the db connection   -->
     <dependency>
       <groupId>p6spy</groupId>
       <artifactId>p6spy</artifactId>
