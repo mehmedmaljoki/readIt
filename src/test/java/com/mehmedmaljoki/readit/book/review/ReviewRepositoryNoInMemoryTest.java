@@ -31,6 +31,7 @@ class ReviewRepositoryNoInMemoryTest {
     .withDatabaseName("test")
     .withUsername("mehmed")
     .withPassword("mehmed");
+//  .reuse(true); // if the starting of the container is slow
 
   @DynamicPropertySource
   private static void properties(DynamicPropertyRegistry registry) {
