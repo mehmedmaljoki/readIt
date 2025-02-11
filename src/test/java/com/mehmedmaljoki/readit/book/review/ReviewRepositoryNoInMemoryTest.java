@@ -1,6 +1,7 @@
 package com.mehmedmaljoki.readit.book.review;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,11 @@ class ReviewRepositoryNoInMemoryTest {
   @Autowired
   private DataSource dataSource;
 
+//  @BeforeAll
+//  static void beforeAll() {
+//    container.start();
+//  }
+
   @BeforeEach
   void beforeEach() {
     assertEquals(0, cut.count());
@@ -93,5 +99,4 @@ class ReviewRepositoryNoInMemoryTest {
 
 
   }
-
 }
