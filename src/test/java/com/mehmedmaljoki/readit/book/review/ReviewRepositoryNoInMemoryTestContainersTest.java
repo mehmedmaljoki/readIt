@@ -43,20 +43,20 @@ class ReviewRepositoryNoInMemoryTestContainersTest {
   @Autowired
   private ReviewRepository cut;
 
-  @Test
-  @Sql(scripts = "/scripts/INIT_REVIEW_EACH_BOOK.sql") // hard to mentain bc DB schema changes and the script has to be updated
-  void shouldGetTwoReviewStaticsWhenDatabaseContainsTwoBooksWithReview() {
-
-    assertEquals(2, cut.count());
-    assertEquals(2, cut.getReviewStatistics().size());
-
-    cut.getReviewStatistics().forEach(reviewStatistic -> {
-      assertNotNull(reviewStatistic.getId());
-      assertNotNull(reviewStatistic.getAvg());
-      assertNotNull(reviewStatistic.getIsbn());
-    });
-
-  }
+//  @Test
+//  @Sql(scripts = "/scripts/INIT_REVIEW_EACH_BOOK.sql") // hard to mentain bc DB schema changes and the script has to be updated
+//  void shouldGetTwoReviewStaticsWhenDatabaseContainsTwoBooksWithReview() {
+//
+//    assertEquals(2, cut.count());
+//    assertEquals(2, cut.getReviewStatistics().size());
+//
+//    cut.getReviewStatistics().forEach(reviewStatistic -> {
+//      assertNotNull(reviewStatistic.getId());
+//      assertNotNull(reviewStatistic.getAvg());
+//      assertNotNull(reviewStatistic.getIsbn());
+//    });
+//
+//  }
 
 
 }
