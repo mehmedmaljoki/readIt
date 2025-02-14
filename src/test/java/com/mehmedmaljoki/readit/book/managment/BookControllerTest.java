@@ -12,11 +12,18 @@ import static org.junit.jupiter.api.Assertions.*;
 //@Import(BookManagementService.class) // why? because the BookController needs the BookManagementService
 class BookControllerTest {
 
+  /*
+    Yes, there’s a difference.
+    With @Autowired we inject a Spring bean from the TestContext to our class to use it.
+
+    With @Import we add a specific class(es) to our Spring TestContext configuration.
+    For example this class, which may be a @Configuration class that contains multiple
+    bean definition (@Bean) which we can then inject into our test using @Autowired.
+   */
+
   @MockBean
   private BookManagementService bookManagementService;
 
-//  @MockBean
-//  private BookRepository bookRepository;
 
 
 
