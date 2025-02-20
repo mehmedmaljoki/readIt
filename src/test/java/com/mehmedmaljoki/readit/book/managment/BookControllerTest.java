@@ -1,12 +1,25 @@
 package com.mehmedmaljoki.readit.book.managment;
 
+import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookController.class) // only bootstrap the one controller bc you would need all the other stuff for other controllers as well
 //@Import(BookManagementService.class) // why? because the BookController needs the BookManagementService
@@ -24,11 +37,30 @@ class BookControllerTest {
   @MockBean
   private BookManagementService bookManagementService;
 
-
+  @Autowired
+  private MockMvc mockMvc;
 
 
   @Test
-  void shouldStart() {
+  @WithMockUser(username = "user")
+  void shouldGetEmptyArrayWhenNoBooksExists() throws Exception {
+    var mvcResult = this.mockMvc
+      .perform(get("/api/books")
+        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.size()", is(0)))
+      .andDo(print())
+      .andReturn();
+  }
+
+  @Test
+  @WithMockUser(username = "user")
+  void shouldNotReturnXML() throws Exception {
+    this.mockMvc
+      .perform(get("/api/books")
+        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML))
+      .andExpect(status().isNotAcceptable());
   }
 
 }
