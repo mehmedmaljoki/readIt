@@ -12,6 +12,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(ReviewController.class)
-@WithMockUser(username = "user")
 class ReviewControllerTest {
 
   @MockBean
@@ -36,6 +40,7 @@ class ReviewControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "user")
   void shouldReturnTwentyReviewsWithoutAnyOrderWhenNoParametersAreSpecified() throws Exception {
 
     ArrayNode result = objectMapper.createArrayNode();
@@ -58,6 +63,28 @@ class ReviewControllerTest {
       .andExpect(jsonPath("$[0].isbn").value("42"))
       .andExpect(jsonPath("$[0].avg").value(89.3))
       .andExpect(jsonPath("$[0].ratings").value(2));
+  }
+
+  @Test
+  void shouldNotReturnReviewStatisticsWhenUserIsUnauthenticated() throws Exception {
+    this.mockMvc
+      .perform(get("/api/books/reviews/statistics"))
+      .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+//  @WithMockUser(username = "user")
+  void shouldReturnReviewStatisticsWhenUserIsAuthenticated() throws Exception {
+    this.mockMvc
+      .perform(get("/api/books/reviews/statistics")
+//      .with(user("user").roles("USER")))
+//      .with(oauth2Login()))
+//        .with(oidcLogin())
+//        .with(httpBasic("user", "password")))
+      .with(jwt()))
+      .andExpect(status().isOk());
+
+
   }
 
 
