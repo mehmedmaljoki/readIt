@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +28,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.head;
@@ -35,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+@EnableMethodSecurity
 @WebMvcTest(ReviewController.class)
 class ReviewControllerTest {
 
@@ -123,13 +127,13 @@ class ReviewControllerTest {
         .with(jwt().jwt(builder -> builder
           .claim("email", "user@gmail.com")
           .claim("preferred_username", "user"))))
-        .andExpect(status().isCreated())
+      .andExpect(status().isCreated())
       .andExpect(header().exists("Location"))
       .andExpect(header().string("Location", containsString("/books/42/reviews/84")));
   }
 
   @Test
-  void shouldRejectNewBookReviewForAuthenticatedUsersWithInvalidPayload() throws  Exception {
+  void shouldRejectNewBookReviewForAuthenticatedUsersWithInvalidPayload() throws Exception {
     // don't test everything here to overload your MockMvc -> test if ratings and so on are missing with
     // Unit tests and against your Bean rules -> Hibernate Validator
     String requestBody = """
@@ -148,5 +152,26 @@ class ReviewControllerTest {
           .claim("preferred_username", "user"))))
       .andExpect(status().isBadRequest())
       .andDo(MockMvcResultHandlers.print());
+  }
+
+  @Test
+  void shouldNotAllowDeletingReviewsWhenUserIsAuthenticatedWithoutModeraterRole() throws Exception {
+    this.mockMvc
+      .perform(delete("/api/books/{isbn}/reviews/{reviewId}", 42, 3)
+        .with(jwt()))
+      .andExpect(status().isForbidden());
+
+    verifyNoInteractions(reviewService);
+  }
+
+  @Test
+//  @WithMockUser(roles = "moderator")
+  void shouldAllowDeletingReviewsWhenUserIsAuthenticatedWithModeraterRole() throws Exception {
+    this.mockMvc
+      .perform(delete("/api/books/{isbn}/reviews/{reviewId}", 42, 3)
+        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_moderator"))))
+      .andExpect(status().isOk());
+
+    verify(reviewService).deleteReview("42", 3L);
   }
 }

@@ -64,8 +64,8 @@ public class ReviewController {
     reviewService.deleteReview(isbn, reviewId);
   }
 
-  @GetMapping("/{isbn}/reviews/{reviewId}")
-  public ObjectNode getReviewById(@PathVariable String isbn, @PathVariable Long reviewId) {
-    return reviewService.getReviewById(isbn, reviewId);
-  }
+//  @GetMapping("/{isbn}/reviews/{reviewId}")
+//  public ObjectNode getReviewById(@PathVariable String isbn, @PathVariable Long reviewId) {
+//    return reviewService.getReviewById(isbn, reviewId);
+//  }
 }
