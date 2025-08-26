@@ -20,16 +20,12 @@ public class OpenLibraryApiClient {
   public Book fetchMetadataForBook(String isbn) {
 
     var result =
-      openLibraryWebClient
-        .get()
-        .uri(
-          "/api/books",
-          uriBuilder ->
-            uriBuilder
-              .queryParam("jscmd", "data")
-              .queryParam("format", "json")
-              .queryParam("bibkeys", isbn)
-              .build())
+      openLibraryWebClient.get().uri("/api/books",
+          uriBuilder -> uriBuilder
+            .queryParam("jscmd", "data")
+            .queryParam("format", "json")
+            .queryParam("bibkeys", isbn)
+            .build())
         .retrieve()
         .bodyToMono(ObjectNode.class)
         .retryWhen(Retry.fixedDelay(2, Duration.ofMillis(200)))
